@@ -1,113 +1,81 @@
 import codecs
 
-#open file to read it
-filename = open("sic.asm", "r")
 
-#open file to read it
-opfile = open("OPTAB.txt", "r")
-
-#read  all input lines
-assembly = filename.readlines()
-
-#read opcode table 
-optab = opfile.readlines()
+    
+intfile = open("acode.mdt","w+") #Open text file for write 
+symFile = open("SYMTAB.txt","w+")
+#litFile = open("Literal.txt","w+")
 
 
-#initialize symbol table, program name, program length and locctr
 SYMTAB = {}
-opttab = {}
 littab = {}
 litpool = {}
 
-intfile = open("acode.mdt","w+")
 
-#initialize a list of directives
-directives = ["START", "END", "BYTE", "WORD", "RESB", "RESW", "BASE", "LTORG"]
+dire = ["START", "BYTE", "RESB" , "WORD" , "RESW", "LTORG", "END"]
 
-#initialize instruction component
 label = ""
 op = ""
-# comment = ""
-# counter = 0
+error = 0
 
+#Store OBTAB.txt in opttab list 
+opttab = {}
+opfile = open("OPTAB.txt", "r")
+for line in opfile:
+    opttab[line[0:9].split(' ')[0]] = line[10:15].strip()
 
-#create a .text files  
-errorf = 0
-
-
-
-#store opcode table in 2D list
-for i, line in enumerate(optab):
-    #read file from third line 
-    if i>1:
-        opttab[line[0:11].split(' ')[0]] = line[15:18].strip()
-
+#ini. START address and program name
 programname = ""
 startaddress = 0
-#read first input line
-
-fline = assembly[0]
+filename = open("sic.asm", "r") 
+assembly = filename.readlines()
+fline = assembly[0]         #Store first line 
 if fline[9:15].strip() == "START":
     programname =  fline[0:8].strip()
     startaddress = int(fline[16:35].strip(),16)
     locCount = startaddress
 
-    #to save a fixed format in intermediate file 
-    blanks = 6-len(str((locCount)))
+    #Write first line to int. file 
+    space = 10-len(str((locCount)))
+    intfile.write(hex(locCount)[2:]+" "*space+fline)
+    intfile.flush()
 
-    intfile.write(hex(locCount)[2:]+" "*blanks+fline)    #write line to intemediate file
-
-    
 else:
     locCount = 0
 
 
 for i, line in enumerate(assembly):
-    #read opcode
     op = line[9:15].strip()
-    if op!= "END" and op != "START" and op != "BASE":
-
-        #if this is not a comment line
-        if line[0] != '.':
-            #write line to intemediate file
-            #check if that line is LTORG
-            if(op == "LTORG"):
-                intfile.write(" "*6+line)
+    if(op!= "END" and op != "START"):
+        
+        if line[0] != '.':  
+            if(op == "LTORG"): 
+                intfile.write(" "*10+line)
             else :
-                #to save a fixed format in intermediate file
-                blanks = 6-len(str((locCount)))
-                intfile.write(hex(locCount)[2:]+" "*blanks+line)
+                space = 10-len(str((locCount)))
+                intfile.write(hex(locCount)[2:]+" "*space+line)
             
-            #read label field
             label = line[0:8].strip()
-            #if there is asymbol in label field
             if label != "":
-                #serch SYMTAB for LABEL
-                #if found
-                if label in SYMTAB:
-                    #set error flag
-                    errorf = 1
-                    print("MULTIPLE DECLARATION TO THE LABEL")
+                if label in SYMTAB: #Check MULTIPLE DECLARATION error 
+                    error = 1
+                    print("There is MULTIPLE DECLARATION in the LABEL :"+" "+label)
                     break
-                #else insert [label, LOCCTR] into SYMTAB
-                else:
+                else: #If there is no MULTIPLE DECLARATION error 
                     SYMTAB[label] = hex(locCount)[2:]
-
-            #found is a boolean to  determine if opcode exist in opcode table
-            found = 0
-
-            #search OPTAB for OPCODE
-            #if found
+                    symFile.write(SYMTAB[label]+" "*10)
+                    symFile.write(line[0:7].strip())
+                    symFile.write("\n")
+            #Chech it the opcode is in OBTAB 
+            found = 0 
             if op in opttab:
                 found = 1
-                #add 3 {instruction length} to LOCCTR
                 locCount += 3
-            #if not found
-            operand = 0
+            else:
+                operand = 0
 
-            if found == 0 and op in directives:
+            if (found == 0 and op in dire):
                 if op == "WORD":
-                    #add 3 {instruction length}
                     locCount += 3
                 elif op == "RESW":
                     operand = line[16:35].strip()
@@ -117,71 +85,71 @@ for i, line in enumerate(assembly):
                     locCount += int(operand)
                 elif op == "BYTE":
                     operand = line[16:35].strip()
-                    #find the length of constant in bytes and add it to locCount
                     if operand[0] == 'X':
-                        locCount += int((len(operand) - 3)/2)
+                        locCount += int((len(operand)-3)/2)
                     elif operand[0] == 'C':
-                        locCount += (len(operand) - 3)
-                #place literals into a pool at some location in object program
+                        locCount += (len(operand)-3)
+
+                #Literals pool 
                 elif op == "LTORG":
-                    for k in littab:
-                        littab[k][2] = hex(locCount)[2:] 
-                        blanks = 6-len(str((locCount)))
-                        intfile.write(hex(locCount)[2:]+" "*blanks+"*"+" "*7+"="+k+"\n")
-                        locCount += int(littab[k][1])
+                    for i in littab:
+                        littab[i][2] = hex(locCount)[2:] 
+                        space = 10-len(str((locCount)))
+                        intfile.write(hex(locCount)[2:]+" "*space+"*"+" "*7+"="+i+"\n")
+                        locCount += int(littab[i][1])
                     littab = {}
-                    
-            #check if line contain literal
+            #Check if there is literal
+            literalList = []
             if line[16:17] == '=':
-                literalList = []
-                ifisExist = 1
+                exist = 1
                 literal = line[17:35].strip()
                 if literal[0]=='C':
-                    hexCode = literal[2:-1].encode("utf-8").hex()
+                    hexco = literal[2:-1].encode("utf-8").hex()
                 elif literal[0]== 'X':
-                    hexCode = literal[2:-1]
+                    hexco = literal[2:-1]
                 else:
-                    #set error flag
-                    print("this is no valid literal ")
-                #find literal in table literal
+                    print("NOT Valid Literal : "+" "+line[16:35].strip())
 
+                #Check if the literal is in literal table
                 if literal in litpool:
-                    ifisExist = 0
+                    exist = 0
                 
-                #if literal not exist in literal tabel 
-                if ifisExist:
-                    literalList=[hexCode,len(hexCode)/2, 0]
+                else:
+                    literalList=[hexco,len(hexco)/2, 0]
                     littab[literal]= literalList
                     litpool[literal]= literalList
-
+                    #Write on literal file
+                    
+                    
 if op == "END":
-    intfile.write(" "*6+line)
+    intfile.write(" "*10+line)
 
-#place literals into apool at the end of prog
-if littab:
-    for k in littab:
-        littab[k][2] = hex(locCount)[2:]
-        blanks = 6-len(str((locCount)))
-        intfile.write(hex(locCount)[2:]+" "*blanks+"*"+" "*7+"="+k+"\n")
-        locCount += int(littab[k][1])
+if littab:   #Repalce the literal pool 
+    for i in littab:
+        littab[i][2] = hex(locCount)[2:]
+        space = 10-len(str((locCount)))
+        intfile.write(hex(locCount)[2:]+" "*space+"*"+" "*7+"="+i+"\n")
+        locCount += int(littab[i][1])
+opfile.close()
+intfile.close()
+filename.close()
 
-#save (locCount - starting add ) as program length
+
 programLength = 0
 lastaddress=locCount
 programLength = int(lastaddress) - int(startaddress)
-#close file
-filename.close()
-opfile.close()
-intfile.close()
-print("The program name: ",programname)
-print('\n'," ")
-print("The program length is : ",hex(int(programLength))[2:].format(int(programLength)))
-print('\n'," ")
-print("Location counter : ",hex(int(locCount))[2:].format(int(locCount)))
-print('\n'," ")
 
-print("the symbol table is : ")
+print('\n')
+
+print("The program name is: ",programname)
+print("Location counter is : ",hex(int(locCount))[2:].format(int(locCount)))
+print("The program length is : ",hex(int(programLength))[2:].format(int(programLength)))
+print('\n')
+
+print("The symbol table is : ")
 print(SYMTAB)
-print('\n'," ")
-print("the litral table is : ")
+print('\n')
+
+print("The literal table is : ")
 print(litpool)
+print('\n')

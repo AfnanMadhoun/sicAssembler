@@ -1,0 +1,12 @@
+1000          FIRST
+1003          CLOOP
+1015          LOOP
+1031          EOF
+1034          THREE
+1037          ZERO
+103a          RETADR
+103d          LENGTH
+1040          BUFFER
+2040          RDREC
+2049          RLOOP
+2061          EXIT
