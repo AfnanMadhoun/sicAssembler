@@ -1,7 +1,11 @@
 import codecs
 
+<<<<<<< HEAD
 from tkinter import filedialog
 from tkinter import *
+=======
+
+>>>>>>> 94be05024ba0a29aa5aeeda9265f538566e42d55
     
 intfile = open("acode.mdt","w+") #Open text file for write 
 symFile = open("SYMTAB.txt","w+")
@@ -18,6 +22,7 @@ dire = ["START", "BYTE", "RESB" , "WORD" , "RESW", "LTORG", "END"]
 label = ""
 op = ""
 error = 0
+<<<<<<< HEAD
 
 #Store OBTAB.txt in opttab list 
 opttab = {}
@@ -25,6 +30,15 @@ opfile = open("OPTAB.txt", "r")
 for line in opfile:
     opttab[line[0:9].split(' ')[0]] = line[10:15].strip()
 
+=======
+
+#Store OBTAB.txt in opttab list 
+opttab = {}
+opfile = open("OPTAB.txt", "r")
+for line in opfile:
+    opttab[line[0:9].split(' ')[0]] = line[10:15].strip()
+
+>>>>>>> 94be05024ba0a29aa5aeeda9265f538566e42d55
 #ini. START address and program name
 programname = ""
 startaddress = 0
@@ -64,7 +78,11 @@ for i, line in enumerate(assembly):
                     break
                 else: #If there is no MULTIPLE DECLARATION error 
                     SYMTAB[label] = hex(locCount)[2:]
+<<<<<<< HEAD
                     symFile.write(SYMTAB[label]+" "*6)
+=======
+                    symFile.write(SYMTAB[label]+" "*10)
+>>>>>>> 94be05024ba0a29aa5aeeda9265f538566e42d55
                     symFile.write(line[0:7].strip())
                     symFile.write("\n")
             #Chech it the opcode is in OBTAB 
@@ -139,6 +157,7 @@ filename.close()
 programLength = 0
 lastaddress=locCount
 programLength = int(lastaddress) - int(startaddress)
+<<<<<<< HEAD
 proglen = hex(int(programLength))[2:].format(int(programLength))
 loc = hex(int(locCount))[2:].format(int(locCount))
 
@@ -184,4 +203,23 @@ liter.pack()
 
 
 file.mainloop()
+
+=======
+
+print('\n')
+
+print("The program name is: ",programname)
+print("Location counter is : ",hex(int(locCount))[2:].format(int(locCount)))
+print("The program length is : ",hex(int(programLength))[2:].format(int(programLength)))
+print('\n')
+
+print("The symbol table is : ")
+print(SYMTAB)
+print('\n')
+
+print("The literal table is : ")
+print(litpool)
+print('\n')
+>>>>>>> 94be05024ba0a29aa5aeeda9265f538566e42d55
+
 
