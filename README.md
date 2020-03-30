@@ -11,14 +11,14 @@
    an envinroment to run python project like VS code , pycharm .
  ## Installation
   clone the project and then make this step :
-  1. write in the power shell :
+  - write in the power shell :
  > $ cd sic-with-literal
-  2. after than make run to the project.
+  - after than make run to the project.
 
  ## License 
    - MIT License 
  ## Project status
-   This project is under progress, pass 1 completed and still pass2 in progress
+  - This project is under progress, pass 1 completed and still pass2 in progress
 
    ## Team
  - Afnan Madhoun 
