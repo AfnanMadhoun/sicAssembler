@@ -1,11 +1,11 @@
 from tkinter import filedialog
 from tkinter import *
+dire = ["START", "BYTE", "RESB" , "WORD" , "RESW", "LTORG", "END"]
 intfile = open("acode.mdt","w+") 
 symFile = open("SYMTAB.txt","w+")
 SYMTAB = {}
 littab = {}
 litpool = {}
-dire = ["START", "BYTE", "RESB" , "WORD" , "RESW", "LTORG", "END"]
 label = ""
 op = ""
 error = 0
@@ -19,10 +19,9 @@ filename = open("sic.asm", "r")
 assembly = filename.readlines()
 fline = assembly[0]         
 if fline[9:15].strip() == "START":
-    programname =  fline[0:8].strip()
     startaddress = int(fline[16:35].strip(),16)
-    locCount = startaddress
-
+    locCount = startaddress  
+    programname =  fline[0:8].strip()
     space = 10-len(str((locCount)))
     intfile.write(hex(locCount)[2:]+" "*space+fline)
     intfile.flush()
@@ -61,21 +60,21 @@ for i, line in enumerate(assembly):
                 operand = 0
 
             if (found == 0 and op in dire):
-                if op == "WORD":
-                    locCount += 3
+                
+                if op == "RESB":
+                    operand = line[16:35].strip()
+                    locCount = locCount + int(operand)
+                elif op == "WORD":
+                    locCount =  locCount + 3
+                elif op == "BYTE":
+                        operand = line[16:35].strip()
+                        if operand[0] == 'X':
+                           locCount = locCount + int((len(operand)-3)/2)
+                        elif operand[0] == 'C':
+                            locCount = locCount + (len(operand)-3)
                 elif op == "RESW":
                     operand = line[16:35].strip()
-                    locCount += 3 * int(operand)
-                elif op == "RESB":
-                    operand = line[16:35].strip()
-                    locCount += int(operand)
-                elif op == "BYTE":
-                    operand = line[16:35].strip()
-                    if operand[0] == 'X':
-                        locCount += int((len(operand)-3)/2)
-                    elif operand[0] == 'C':
-                        locCount += (len(operand)-3)
-
+                    locCount = locCount + 3 * int(operand)
                 elif op == "LTORG":
                     for i in littab:
                         littab[i][2] = hex(locCount)[2:] 
@@ -87,10 +86,11 @@ for i, line in enumerate(assembly):
             if line[16:17] == '=':
                 exist = 1
                 literal = line[17:35].strip()
-                if literal[0]=='C':
-                    hexco = literal[2:-1].encode("utf-8").hex()
-                elif literal[0]== 'X':
+                if literal[0]== 'X':
                     hexco = literal[2:-1]
+                elif literal[0]=='C':
+                    hexco = literal[2:-1].encode("utf-8").hex()
+                
                 else:
                     print("NOT Valid Literal : "+" "+line[16:35].strip())
 
@@ -100,7 +100,6 @@ for i, line in enumerate(assembly):
                 else:
                     literalList=[hexco,len(hexco)/2, 0]
                     littab[literal]= literalList
-                    litpool[literal]= literalList                   
 if op == "END":
     intfile.write(" "*10+line)
 if littab:   
