@@ -100,6 +100,7 @@ for i, line in enumerate(assembly):
                 else:
                     literalList=[hexco,len(hexco)/2, 0]
                     littab[literal]= literalList
+                    litpool[literal]= literalList                   
 if op == "END":
     intfile.write(" "*10+line)
 if littab:   
