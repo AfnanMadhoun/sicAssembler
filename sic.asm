@@ -15,6 +15,7 @@ LOOP     LDA    =C'EOF'
          LDL    RETADR
          RSUB
          LTORG
+.      LITERAL POOL
 EOF      BYTE   C'EOF'
 THREE    WORD   3
 ZERO     WORD   0
