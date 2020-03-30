@@ -1,43 +1,28 @@
-import codecs
-
 from tkinter import filedialog
 from tkinter import *
-
-    
-intfile = open("acode.mdt","w+") #Open text file for write 
+intfile = open("acode.mdt","w+") 
 symFile = open("SYMTAB.txt","w+")
-#litFile = open("Literal.txt","w+")
-
-
 SYMTAB = {}
 littab = {}
 litpool = {}
-
-
 dire = ["START", "BYTE", "RESB" , "WORD" , "RESW", "LTORG", "END"]
-
 label = ""
 op = ""
 error = 0
-
-#Store OBTAB.txt in opttab list 
 opttab = {}
 opfile = open("OPTAB.txt", "r")
 for line in opfile:
     opttab[line[0:9].split(' ')[0]] = line[10:15].strip()
-
-#ini. START address and program name
 programname = ""
 startaddress = 0
 filename = open("sic.asm", "r") 
 assembly = filename.readlines()
-fline = assembly[0]         #Store first line 
+fline = assembly[0]         
 if fline[9:15].strip() == "START":
     programname =  fline[0:8].strip()
     startaddress = int(fline[16:35].strip(),16)
     locCount = startaddress
 
-    #Write first line to int. file 
     space = 10-len(str((locCount)))
     intfile.write(hex(locCount)[2:]+" "*space+fline)
     intfile.flush()
@@ -59,16 +44,15 @@ for i, line in enumerate(assembly):
             
             label = line[0:8].strip()
             if label != "":
-                if label in SYMTAB: #Check MULTIPLE DECLARATION error 
+                if label in SYMTAB: 
                     error = 1
                     print("There is MULTIPLE DECLARATION in the LABEL :"+" "+label)
                     break
-                else: #If there is no MULTIPLE DECLARATION error 
+                else:
                     SYMTAB[label] = hex(locCount)[2:]
                     symFile.write(SYMTAB[label]+" "*10)
                     symFile.write(line[0:7].strip())
                     symFile.write("\n")
-            #Chech it the opcode is in OBTAB 
             found = 0 
             if op in opttab:
                 found = 1
@@ -92,7 +76,6 @@ for i, line in enumerate(assembly):
                     elif operand[0] == 'C':
                         locCount += (len(operand)-3)
 
-                #Literals pool 
                 elif op == "LTORG":
                     for i in littab:
                         littab[i][2] = hex(locCount)[2:] 
@@ -100,7 +83,6 @@ for i, line in enumerate(assembly):
                         intfile.write(hex(locCount)[2:]+" "*space+"*"+" "*7+"="+i+"\n")
                         locCount += int(littab[i][1])
                     littab = {}
-            #Check if there is literal
             literalList = []
             if line[16:17] == '=':
                 exist = 1
@@ -112,21 +94,16 @@ for i, line in enumerate(assembly):
                 else:
                     print("NOT Valid Literal : "+" "+line[16:35].strip())
 
-                #Check if the literal is in literal table
                 if literal in litpool:
                     exist = 0
                 
                 else:
                     literalList=[hexco,len(hexco)/2, 0]
                     littab[literal]= literalList
-                    litpool[literal]= literalList
-                    #Write on literal file
-                    
-                    
+                    litpool[literal]= literalList                   
 if op == "END":
     intfile.write(" "*10+line)
-
-if littab:   #Repalce the literal pool 
+if littab:   
     for i in littab:
         littab[i][2] = hex(locCount)[2:]
         space = 10-len(str((locCount)))
@@ -135,8 +112,6 @@ if littab:   #Repalce the literal pool
 opfile.close()
 intfile.close()
 filename.close()
-
-
 programLength = 0
 lastaddress=locCount
 programLength = int(lastaddress) - int(startaddress)
@@ -151,14 +126,9 @@ loc = hex(int(locCount))[2:].format(int(locCount))
 # print(litpool)
 # print('\n')
 
-# print("The program name is: ",programname)
-# print("Location counter is : ",hex(int(locCount))[2:].format(int(locCount)))
-# print("The program length is : ",proglen)
-# print('\n')
 
 
-
-######### gui part 
+############################ gui part 
 
 file = Tk()
 file.title("sic assembler with literal") 
@@ -173,10 +143,9 @@ programLength.pack()
 tit = Label(file, text=" Symbol Table:", font='time 18 bold italic underline')
 tit.pack()
 symbol = Text(file, height=120, width=120 ,font='time 18 bold italic'  )
-# symbol.configure(background = "silver")
+symbol.configure(background = "silver")
 symbol.insert(END,SYMTAB)
 symbol.pack()
-
 lit = Label(file, text=" Literal  :", font='time 18 bold italic underline')
 lit.pack()
 liter = Text(file, height=120, width=120 ,font='time 18 bold italic'  )
