@@ -12,7 +12,7 @@
  ## Installation
   clone the project and then make this step :
   1. write in the power shell :
-    > $ cd sic-with-literal
+ > $ cd sic-with-literal
   2. after than make run to the project.
 
  ## License 
