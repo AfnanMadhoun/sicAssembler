@@ -16,7 +16,7 @@
   2. after than make run to the project.
 
  ## License 
-   MIT License 
+   - MIT License 
  ## Project status
    This project is under progress, pass 1 completed and still pass2 in progress
 
