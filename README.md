@@ -1,4 +1,4 @@
-# sicAssembler-with-literal
+# sic-with-literal
 ## This is SIC Aseempler which support literal written in python 
 
 ### pass1.py is a SIX  assembler. In pass 1, all symbols are added to Symtab with their appropriate values. 
