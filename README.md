@@ -8,7 +8,7 @@
 2. program name, location counter and program length
 3. Intermediate file (.mdt): this file will store in acode.mdt
  ## Prerequisites
-   an envinroment to run python project like VS code , pycharm .
+  -  an envinroment to run python project like VS code , pycharm .
  ## Installation
   clone the project and then make this step :
   - write in the power shell :
