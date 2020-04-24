@@ -1,8 +1,13 @@
 from tkinter import filedialog
 from tkinter import *
 dire = ["START", "BYTE", "RESB" , "WORD" , "RESW", "LTORG", "END"]
-intfile = open("acode.mdt","w+") 
+intfile = open("intmdte_file.mdt","w+") 
 symFile = open("SYMTAB.txt","w+")
+ErrorFile = open("Error.txt","w+")
+ErrorFile = open("Error.txt","w+")
+Littab= open("LITTAB.txt", "w+")
+
+
 SYMTAB = {}
 littab = {}
 litpool = {}
@@ -15,7 +20,7 @@ for line in opfile:
     opttab[line[0:9].split(' ')[0]] = line[10:15].strip()
 programname = ""
 startaddress = 0
-filename = open("sic.asm", "r") 
+filename = open("cource_file.asm", "r") 
 assembly = filename.readlines()
 fline = assembly[0]         
 if fline[9:15].strip() == "START":
@@ -40,12 +45,14 @@ for i, line in enumerate(assembly):
             else :
                 space = 10-len(str((locCount)))
                 intfile.write(hex(locCount)[2:]+" "*space+line)
-            
+
             label = line[0:8].strip()
             if label != "":
                 if label in SYMTAB: 
                     error = 1
                     print("There is MULTIPLE DECLARATION in the LABEL :"+" "+label)
+                    ErrorFile.write("There is MULTIPLE DECLARATION in the LABEL :"+" " + label)
+                    ErrorFile.write("\n")
                     break
                 else:
                     SYMTAB[label] = hex(locCount)[2:]
@@ -82,6 +89,8 @@ for i, line in enumerate(assembly):
                         intfile.write(hex(locCount)[2:]+" "*space+"*"+" "*7+"="+i+"\n")
                         locCount += int(littab[i][1])
                     littab = {}
+                       
+        
             literalList = []
             if line[16:17] == '=':
                 exist = 1
@@ -92,7 +101,10 @@ for i, line in enumerate(assembly):
                     hexco = literal[2:-1].encode("utf-8").hex()
                 
                 else:
-                    print("NOT Valid Literal : "+" "+line[16:35].strip())
+                    print("NOT Valid Literal : "+" "+line[17:35].strip())
+                    ErrorFile.write("NOT Valid Literal : "+" "+line[17:35].strip())
+                    ErrorFile.write("\n")
+                    break
 
                 if literal in litpool:
                     exist = 0
@@ -100,7 +112,15 @@ for i, line in enumerate(assembly):
                 else:
                     literalList=[hexco,len(hexco)/2, 0]
                     littab[literal]= literalList
-                    litpool[literal]= literalList                   
+                    litpool[literal]= literalList
+                    Littab.write(str(litpool[literal])) 
+                    Littab.write("\n") 
+            opcode = line[9:15].strip()
+            if (opcode not in opttab and opcode not in dire):
+                print("NOT Valid OPCODE: "+" "+line[9:15].strip())
+                ErrorFile.write("NOT Valid OPCODE: "+" "+line[9:15].strip())
+                ErrorFile.write("\n")
+                break
 if op == "END":
     intfile.write(" "*10+line)
 if littab:   
@@ -118,17 +138,8 @@ programLength = int(lastaddress) - int(startaddress)
 proglen = hex(int(programLength))[2:].format(int(programLength))
 loc = hex(int(locCount))[2:].format(int(locCount))
 
-# print("The symbol table is : ")
-# print(SYMTAB)
-# print('\n')
 
-# print("The literal table is : ")
-# print(litpool)
-# print('\n')
-
-
-
-############################ gui part 
+#gui part 
 
 file = Tk()
 file.title("sic assembler with literal") 

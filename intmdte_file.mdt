@@ -4,14 +4,14 @@
 1006               LDA    LENGTH            TEST FOR EOF
 1009               COMP   ZERO
 100c               JEQ    ENDFIL
-100f               JSUB   WRREC
+100f               JSUB   RDREC
 1012               J      CLOOP
-1015      LOOP     LDA    =C'EOF'
+1015      ENDFIL   LDA    =C'EOF'
 1018               LDA    =X'F1'
 101b               STA    BUFFER
-101e               LDA    THREE8
+101e               LDA    THREE
 1021               STA    LENGTH
-1024               JSUB   WRREC
+1024               JSUB   RDREC
 1027               LDL    RETADR
 102a               RSUB
                    LTORG
@@ -32,9 +32,11 @@
 2052               COMP   ZERO
 2055               JEQ    EXIT
 2058               STCH   BUFFER,X
-205b               TIX    MAXLEN
+205b               TIX    LENGTH
 205e               JLT    RLOOP
 2061      EXIT     STX    LENGTH
-2064               RSUB
+2064      INPUT    BYTE   X'F1'
+2065               RSUB
+2068               RSUB
                    END    FIRST
-2067      *       =X'F2'
+206b      *       =X'F2'

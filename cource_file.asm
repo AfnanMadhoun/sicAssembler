@@ -4,14 +4,14 @@ CLOOP    JSUB   RDREC
          LDA    LENGTH            TEST FOR EOF
          COMP   ZERO
          JEQ    ENDFIL
-         JSUB   WRREC
+         JSUB   RDREC
          J      CLOOP
-LOOP     LDA    =C'EOF'
+ENDFIL   LDA    =C'EOF'
          LDA    =X'F1'
          STA    BUFFER
-         LDA    THREE8
+         LDA    THREE
          STA    LENGTH
-         JSUB   WRREC
+         JSUB   RDREC
          LDL    RETADR
          RSUB
          LTORG
@@ -32,8 +32,10 @@ RLOOP    TD     INPUT
          COMP   ZERO
          JEQ    EXIT
          STCH   BUFFER,X
-         TIX    MAXLEN
+         TIX    LENGTH
          JLT    RLOOP
 EXIT     STX    LENGTH
+INPUT    BYTE   X'F1'
+         RSUB
          RSUB
          END    FIRST

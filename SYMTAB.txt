@@ -1,6 +1,6 @@
 1000          FIRST
 1003          CLOOP
-1015          LOOP
+1015          ENDFIL
 1031          EOF
 1034          THREE
 1037          ZERO
@@ -10,3 +10,4 @@
 2040          RDREC
 2049          RLOOP
 2061          EXIT
+2064          INPUT
