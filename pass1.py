@@ -8,6 +8,7 @@ ErrorFile = open("Error.txt","w+")
 Littab= open("LITTAB.txt", "w+")
 
 
+
 SYMTAB = {}
 littab = {}
 litpool = {}

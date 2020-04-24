@@ -3,6 +3,7 @@ from builtins import str
 from nt import write
 import struct
 
+
 objpgm = open("ObjectProgram.lst","w")	
 inter = open("intmdte_file.mdt","r")
 objcode = open("ObjectCode.obj","w+")
