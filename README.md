@@ -17,7 +17,7 @@
  ## Installation
   clone the project and then make this step :
   - write in the power shell :
- > $ cd sic-with-literal
+ > $ cd SicAssembler
   - after than make run to the project.
 
  ## License 
